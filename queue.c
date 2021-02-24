@@ -6,6 +6,32 @@
 #include "queue.h"
 
 /*
+ * Internal functions
+ */
+
+list_ele_t *new_element(char *s)
+{
+    /* construct new  */
+    list_ele_t *element;
+    element = malloc(sizeof(list_ele_t));
+    if (element == NULL)
+        return NULL;
+    element->next = NULL;
+
+    /* copy string */
+    size_t s_len = strlen(s);
+    element->value = malloc(s_len * sizeof(char));
+    if (element->value == NULL) {
+        free(element);
+        return NULL;
+    }
+    /* length + 1 for NULL charactor(stirng end) */
+    strncpy(element->value, s, s_len + 1);
+
+    return element;
+}
+
+/*
  * Create empty queue.
  * Return NULL if could not allocate space.
  */
@@ -13,8 +39,11 @@ queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
 
-    if (q != NULL)
+    if (q != NULL) {
         q->head = NULL;
+        q->tail = NULL;
+    }
+
 
     return q;
 }
@@ -36,27 +65,17 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
-    list_ele_t *newh;
-    newh = malloc(sizeof(list_ele_t));
+    list_ele_t *newh = new_element(s);
     if (newh == NULL)
         return false;
 
-    /* copy string */
-    size_t s_len = strlen(s);
-    newh->value = malloc(s_len * sizeof(char));
-    if (newh->value == NULL) {
-        free(newh);
-        return false;
-    }
-    strncpy(newh->value, s,
-            s_len + 1); /* length + 1 for NULL charactor(stirng end) */
-
-    /* update linked list */
     newh->next = q->head;
     q->head = newh;
+    q->size++;
+
     if (q->tail == NULL)
         q->tail = newh;
-    q->size++;
+
     return true;
 }
 
@@ -69,10 +88,19 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
-    /* TODO: You need to write the complete code for this function */
-    /* Remember: It should operate in O(1) time */
-    /* TODO: Remove the above comment when you are about to implement. */
-    return false;
+    list_ele_t *newt = new_element(s);
+    if (newt == NULL)
+        return false;
+
+    if (q->tail == NULL && q->head == NULL)
+        q->head = newt;
+    else
+        q->tail->next = newt;
+
+    q->tail = newt;
+    q->size++;
+
+    return true;
 }
 
 /*
