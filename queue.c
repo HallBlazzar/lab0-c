@@ -9,24 +9,34 @@
  * Internal functions
  */
 
+/*
+ * Create element.
+ * Return new element if creation success.
+ * Return NULL if error occur during creation.
+ */
 list_ele_t *new_element(char *s)
 {
-    /* construct new  */
+    /* construct new element */
     list_ele_t *element;
     element = malloc(sizeof(list_ele_t));
-    if (element == NULL)
-        return NULL;
-    element->next = NULL;
 
-    /* copy string */
-    size_t boundary_size = strlen(s) + 1;
-    element->value = malloc(boundary_size * sizeof(char));
-    if (element->value == NULL) {
-        free(element);
+    if (!element)
         return NULL;
+
+    element->next = NULL;
+    element->value = NULL;
+
+    /* copy string if source string exist */
+    if (s) {
+        size_t boundary_size = strlen(s) + 1;
+        element->value = malloc(boundary_size * sizeof(char));
+        if (element->value == NULL) {
+            free(element);
+            return NULL;
+        }
+        /* length + 1 for NULL charactor(stirng end) */
+        strncpy(element->value, s, boundary_size);
     }
-    /* length + 1 for NULL charactor(stirng end) */
-    strncpy(element->value, s, boundary_size);
 
     return element;
 }
@@ -39,7 +49,7 @@ queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
 
-    if (q != NULL) {
+    if (q) {
         q->head = NULL;
         q->tail = NULL;
     }
@@ -65,18 +75,18 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
-    if (q == NULL)
+    if (!q)
         return false;
 
     list_ele_t *newh = new_element(s);
-    if (newh == NULL)
+    if (!newh)
         return false;
 
     newh->next = q->head;
     q->head = newh;
     q->size++;
 
-    if (q->tail == NULL)
+    if (!q->tail)
         q->tail = newh;
 
     return true;
@@ -91,14 +101,14 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
-    if (q == NULL)
+    if (!q)
         return false;
 
     list_ele_t *newt = new_element(s);
-    if (newt == NULL)
+    if (!newt)
         return false;
 
-    if (q->tail == NULL && q->head == NULL)
+    if (!q->tail)
         q->head = newt;
     else
         q->tail->next = newt;
@@ -119,13 +129,13 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    if (q == NULL)
+    if (!q)
         return false;
 
-    if (q->head == NULL)
+    if (!q->head)
         return false;
 
-    if (sp != NULL) {
+    if (sp) {
         size_t boundary = bufsize - 1;
         strncpy(sp, q->head->value, boundary);
         sp[boundary] = '\0';
