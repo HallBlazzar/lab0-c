@@ -52,6 +52,7 @@ queue_t *q_new()
     if (q) {
         q->head = NULL;
         q->tail = NULL;
+        q->size = 0;
     }
 
 
@@ -145,6 +146,8 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
     if (q->tail == q->head)
         q->tail = NULL;
     q->head = q->head->next;
+    q->size--;
+
     free(head_to_remove->value);
     free(head_to_remove);
 
@@ -157,10 +160,10 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* Remember: It should operate in O(1) time */
-    /* TODO: Remove the above comment when you are about to implement. */
-    return q->size;
+    if (q)
+        return q->size;
+    else
+        return 0;
 }
 
 /*
@@ -172,8 +175,27 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (q && q->size > 1) {
+        list_ele_t *new_head = q->head;
+        list_ele_t *old_tail = q->head->next;
+        list_ele_t *old_head = q->head->next->next;
+
+        while (old_head) {
+            old_tail->next = new_head;
+            new_head = old_tail;
+            old_tail = old_head;
+            old_head = old_head->next;
+        }
+
+        /* update next element of head/tail */
+        q->tail->next = new_head;
+        q->head->next = NULL;
+
+        /* change head and tail */
+        list_ele_t *tmp = q->head;
+        q->head = q->tail;
+        q->tail = tmp;
+    }
 }
 
 /*
