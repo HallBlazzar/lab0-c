@@ -19,14 +19,14 @@ list_ele_t *new_element(char *s)
     element->next = NULL;
 
     /* copy string */
-    size_t s_len = strlen(s);
-    element->value = malloc(s_len * sizeof(char));
+    size_t boundary_size = strlen(s) + 1;
+    element->value = malloc(boundary_size * sizeof(char));
     if (element->value == NULL) {
         free(element);
         return NULL;
     }
     /* length + 1 for NULL charactor(stirng end) */
-    strncpy(element->value, s, s_len + 1);
+    strncpy(element->value, s, boundary_size);
 
     return element;
 }
@@ -65,6 +65,9 @@ void q_free(queue_t *q)
  */
 bool q_insert_head(queue_t *q, char *s)
 {
+    if (q == NULL)
+        return false;
+
     list_ele_t *newh = new_element(s);
     if (newh == NULL)
         return false;
@@ -88,6 +91,9 @@ bool q_insert_head(queue_t *q, char *s)
  */
 bool q_insert_tail(queue_t *q, char *s)
 {
+    if (q == NULL)
+        return false;
+
     list_ele_t *newt = new_element(s);
     if (newt == NULL)
         return false;
@@ -113,9 +119,25 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    /* TODO: You need to fix up this code. */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (q == NULL)
+        return false;
+
+    if (q->head == NULL)
+        return false;
+
+    if (sp != NULL) {
+        size_t boundary = bufsize - 1;
+        strncpy(sp, q->head->value, boundary);
+        sp[boundary] = '\0';
+    }
+
+    list_ele_t *head_to_remove = q->head;
+    if (q->tail == q->head)
+        q->tail = NULL;
     q->head = q->head->next;
+    free(head_to_remove->value);
+    free(head_to_remove);
+
     return true;
 }
 
