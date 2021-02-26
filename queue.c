@@ -42,6 +42,47 @@ list_ele_t *new_element(char *s)
 }
 
 /*
+ * Merge sort utils.
+ */
+list_ele_t *merge(list_ele_t *left, list_ele_t *right)
+{
+    if (!left)
+        return right;
+    if (!right)
+        return left;
+
+    if (strcmp(left->value, right->value) < 0) {
+        left->next = merge(left->next, right);
+        return left;
+    } else {
+        right->next = merge(left, right->next);
+        return right;
+    }
+}
+
+list_ele_t *merge_sort(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+
+    while (fast && fast->next) {
+        slow = slow->next;
+        fast = fast->next;
+    }
+
+    fast = slow->next;
+    slow->next = NULL;
+
+    list_ele_t *left = merge_sort(head);
+    list_ele_t *right = merge_sort(fast);
+
+    return merge(left, right);
+}
+
+/*
  * Create empty queue.
  * Return NULL if could not allocate space.
  */
@@ -62,8 +103,6 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
-    /* TODO: How about freeing the list elements and the strings? */
-    /* Free queue structure */
     list_ele_t *new_head = q->head;
 
     while (new_head) {
@@ -214,6 +253,13 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (!q)
+        return;
+
+    q->head = merge_sort(q->head);
+    q->tail = q->head;
+
+    for (size_t _ = 1; _ < q->size; _++) {
+        q->tail = q->tail->next;
+    }
 }
