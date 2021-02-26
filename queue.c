@@ -270,15 +270,7 @@ list_ele_t *merge(list_ele_t *left, list_ele_t *right)
 
     tmp.next = NULL;
 
-    while (true) {
-        if (!left) {
-            tmp_ref->next = right;
-            break;
-        } else if (!right) {
-            tmp_ref->next = left;
-            break;
-        }
-
+    while (left && right) {
         if (strcmp(left->value, right->value) <= 0) {
             tmp_ref->next = left;
             tmp_ref = tmp_ref->next;
@@ -288,6 +280,12 @@ list_ele_t *merge(list_ele_t *left, list_ele_t *right)
             tmp_ref = tmp_ref->next;
             right = right->next;
         }
+    }
+
+    if (left) {
+        tmp_ref->next = left;
+    } else if (right) {
+        tmp_ref->next = right;
     }
 
     return tmp.next;
