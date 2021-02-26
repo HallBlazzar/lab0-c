@@ -103,6 +103,9 @@ queue_t *q_new()
 /* Free all storage used by queue */
 void q_free(queue_t *q)
 {
+    if (!q)
+        return;
+
     list_ele_t *new_head = q->head;
 
     while (new_head) {
