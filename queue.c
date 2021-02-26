@@ -10,77 +10,16 @@
  */
 
 /*
- * Create element.
- * Return new element if creation success.
- * Return NULL if error occur during creation.
+ * Element creation utils.
  */
-list_ele_t *new_element(char *s)
-{
-    /* construct new element */
-    list_ele_t *element;
-    element = malloc(sizeof(list_ele_t));
-
-    if (!element)
-        return NULL;
-
-    element->next = NULL;
-    element->value = NULL;
-
-    /* copy string if source string exist */
-    if (s) {
-        size_t boundary_size = strlen(s) + 1;
-        element->value = malloc(boundary_size * sizeof(char));
-        if (element->value == NULL) {
-            free(element);
-            return NULL;
-        }
-        /* length + 1 for NULL charactor(stirng end) */
-        strncpy(element->value, s, boundary_size);
-    }
-
-    return element;
-}
+list_ele_t *new_element(char *s);
 
 /*
  * Merge sort utils.
  */
-list_ele_t *merge(list_ele_t *left, list_ele_t *right)
-{
-    if (!left)
-        return right;
-    if (!right)
-        return left;
+list_ele_t *merge(list_ele_t *left, list_ele_t *right);
+list_ele_t *merge_sort(list_ele_t *head);
 
-    if (strcmp(left->value, right->value) < 0) {
-        left->next = merge(left->next, right);
-        return left;
-    } else {
-        right->next = merge(left, right->next);
-        return right;
-    }
-}
-
-list_ele_t *merge_sort(list_ele_t *head)
-{
-    if (!head || !head->next)
-        return head;
-
-    list_ele_t *fast = head->next;
-    list_ele_t *slow = head;
-
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next;
-    }
-
-    fast = slow->next;
-    slow->next = NULL;
-
-    list_ele_t *left = merge_sort(head);
-    list_ele_t *right = merge_sort(fast);
-
-    return merge(left, right);
-}
 
 /*
  * Create empty queue.
@@ -172,6 +111,38 @@ bool q_insert_tail(queue_t *q, char *s)
 }
 
 /*
+ * Create element.
+ * Return new element if creation success.
+ * Return NULL if error occur during creation.
+ */
+list_ele_t *new_element(char *s)
+{
+    /* construct new element */
+    list_ele_t *element;
+    element = malloc(sizeof(list_ele_t));
+
+    if (!element)
+        return NULL;
+
+    element->next = NULL;
+    element->value = NULL;
+
+    /* copy string if source string exist */
+    if (s) {
+        size_t boundary_size = strlen(s) + 1;
+        element->value = malloc(boundary_size * sizeof(char));
+        if (element->value == NULL) {
+            free(element);
+            return NULL;
+        }
+        /* length + 1 for NULL charactor(stirng end) */
+        strncpy(element->value, s, boundary_size);
+    }
+
+    return element;
+}
+
+/*
  * Attempt to remove element from head of queue.
  * Return true if successful.
  * Return false if queue is NULL or empty.
@@ -256,13 +227,68 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    if (!q)
+    if (!q || q->size == 0)
         return;
 
     q->head = merge_sort(q->head);
     q->tail = q->head;
 
-    for (size_t _ = 1; _ < q->size; _++) {
+    while (q->tail->next) {
         q->tail = q->tail->next;
     }
+}
+
+list_ele_t *merge_sort(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+
+    list_ele_t *fast = head->next;
+    list_ele_t *slow = head;
+
+    while (fast) {
+        fast = fast->next;
+        if (fast) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+
+    fast = slow->next;
+    slow->next = NULL;
+
+    list_ele_t *left = merge_sort(head);
+    list_ele_t *right = merge_sort(fast);
+
+    return merge(left, right);
+}
+
+list_ele_t *merge(list_ele_t *left, list_ele_t *right)
+{
+    list_ele_t tmp;
+    list_ele_t *tmp_ref = &tmp;
+
+    tmp.next = NULL;
+
+    while (true) {
+        if (!left) {
+            tmp_ref->next = right;
+            break;
+        } else if (!right) {
+            tmp_ref->next = left;
+            break;
+        }
+
+        if (strcmp(left->value, right->value) <= 0) {
+            tmp_ref->next = left;
+            tmp_ref = tmp_ref->next;
+            left = left->next;
+        } else {
+            tmp_ref->next = right;
+            tmp_ref = tmp_ref->next;
+            right = right->next;
+        }
+    }
+
+    return tmp.next;
 }
