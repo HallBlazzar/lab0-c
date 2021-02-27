@@ -769,7 +769,7 @@ int main(int argc, char *argv[])
     linenoiseHistoryLoad(HISTORY_FILE); /* Load the history at startup */
     set_verblevel(level);
     if (level > 1) {
-        set_echo(true);
+        set_echo(1);
     }
     if (logfile_name)
         set_logfile(logfile_name);

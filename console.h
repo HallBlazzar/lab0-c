@@ -8,7 +8,7 @@
 /* Implementation of simple command-line interface */
 
 /* Simulation flag of console option */
-extern bool simulation;
+extern int simulation;
 
 /* Each command defined in terms of a function */
 typedef bool (*cmd_function)(int argc, char *argv[]);
@@ -57,7 +57,7 @@ bool get_int(char *vname, int *loc);
 void add_quit_helper(cmd_function qf);
 
 /* Turn echoing on/off */
-void set_echo(bool on);
+void set_echo(int on);
 
 /* Complete command interpretation */
 
