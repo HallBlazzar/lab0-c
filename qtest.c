@@ -781,7 +781,8 @@ int main(int argc, char *argv[])
 
     bool ok = true;
     ok = ok && run_console(infile_name);
-    ok = ok && finish_cmd();
+    bool finish_clean_up = finish_cmd();
+    ok = ok && finish_clean_up;
 
     return ok ? 0 : 1;
 }
