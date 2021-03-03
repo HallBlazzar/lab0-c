@@ -17,6 +17,8 @@
 
 #include "report.h"
 
+#include "web.h"
+
 /* Some global values */
 int simulation = false;
 static cmd_ptr cmd_list = NULL;
@@ -660,6 +662,7 @@ bool run_console(char *infile_name)
             linenoiseHistoryAdd(cmdline);       /* Add to the history. */
             linenoiseHistorySave(HISTORY_FILE); /* Save the history on disk. */
             linenoiseFree(cmdline);
+            handle_request();
         }
     } else {
         while (!cmd_done())
